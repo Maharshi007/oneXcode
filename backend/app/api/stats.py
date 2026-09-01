@@ -19,4 +19,4 @@ def health_check():
     """
     API Health check endpoint.
     """
-    return {"status": "ok", "service": "PrepTrack API", "version": "1.0.0", "author": "Maharshi"}
+    return {"status": "ok", "service": "MAHIX API", "version": "1.0.0", "author": "Maharshi"}

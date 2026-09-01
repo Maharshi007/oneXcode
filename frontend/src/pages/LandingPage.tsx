@@ -56,10 +56,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-indigo-500/10 dark:bg-indigo-500/15 blur-3xl pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto text-center space-y-6">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/80 border border-brand-200/80 dark:border-brand-800/60 text-brand-700 dark:text-brand-300 text-xs font-semibold shadow-sm">
-            <Sparkles className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
-            <span>Targeted SDE Placement & OA Preparation</span>
+          {/* Brand Badge */}
+          <div className="inline-flex flex-col items-center justify-center px-4 py-1.5 rounded-xl bg-brand-50 dark:bg-brand-950/80 border border-brand-200/80 dark:border-brand-800/60 shadow-sm">
+            <span className="text-xs font-black tracking-widest text-brand-700 dark:text-brand-300 uppercase">
+              MAHIX
+            </span>
+            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 tracking-tight">
+              Code. Practice. Conquer.
+            </span>
           </div>
 
           {/* Heading */}

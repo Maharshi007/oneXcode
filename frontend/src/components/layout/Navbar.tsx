@@ -38,14 +38,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Terminal className="h-5 w-5" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-50">
-                  Prep<span className="text-brand-600 dark:text-brand-400">Track</span>
+              <div className="flex items-center gap-1.5 leading-none">
+                <span className="text-base font-black tracking-tight text-slate-900 dark:text-slate-50">
+                  MAHIX
                 </span>
-                <span className="text-[10px] uppercase font-bold tracking-widest bg-brand-50 dark:bg-brand-950/80 text-brand-600 dark:text-brand-400 px-1.5 py-0.5 rounded border border-brand-200/60 dark:border-brand-800/60">
+                <span className="text-[9px] uppercase font-bold tracking-widest bg-brand-50 dark:bg-brand-950/80 text-brand-600 dark:text-brand-400 px-1.5 py-0.5 rounded border border-brand-200/60 dark:border-brand-800/60 leading-none">
                   DSA
                 </span>
               </div>
+              <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 tracking-tight block leading-tight mt-0.5">
+                Code. Practice. Conquer.
+              </span>
             </div>
           </button>
 

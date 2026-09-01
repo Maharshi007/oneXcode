@@ -12,13 +12,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-600 text-white font-bold text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white font-bold text-xs">
                 <Terminal className="h-4 w-4" />
               </div>
-              <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                Prep<span className="text-brand-600 dark:text-brand-400">Track</span>
-              </span>
+              <div>
+                <span className="text-sm font-black tracking-tight text-slate-900 dark:text-slate-100 block leading-tight">
+                  MAHIX
+                </span>
+                <span className="text-[10px] text-brand-600 dark:text-brand-400 font-semibold tracking-tight block">
+                  Code. Practice. Conquer.
+                </span>
+              </div>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
               Targeted Data Structures & Algorithms (DSA) preparation for tech placements, Online Assessments (OAs), and Software Engineering interviews across top companies.
@@ -68,7 +73,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               Developer
             </h4>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
-              Architected and designed with full-stack engineering excellence by <strong className="text-slate-900 dark:text-slate-200">Maharshi</strong>.
+              Architected and designed with full-stack engineering by <strong className="text-slate-900 dark:text-slate-200">Maharshi</strong>.
             </p>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-mono text-slate-800 dark:text-slate-200 font-medium">
               <Code2 className="h-3.5 w-3.5 text-brand-500" />
@@ -79,7 +84,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         {/* Bottom bar */}
         <div className="border-t border-slate-200 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-slate-400">
-          <p>© {new Date().getFullYear()} PrepTrack. Built for placement success.</p>
+          <p>© {new Date().getFullYear()} MAHIX. Code. Practice. Conquer.</p>
           <div className="flex items-center gap-1 text-xs">
             <span>Crafted with</span>
             <Heart className="h-3.5 w-3.5 text-rose-500 fill-rose-500 inline mx-0.5" />

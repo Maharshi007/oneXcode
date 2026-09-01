@@ -1,16 +1,36 @@
 import os
+from pathlib import Path
 from typing import List, Union
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
+# Resolve base directories to reliably locate .env from any working directory
+BACKEND_DIR = Path(__file__).resolve().parent.parent.parent  # .../backend
+PROJECT_ROOT = BACKEND_DIR.parent                           # .../root
+
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "PrepTrack"
-    PROJECT_SUBTITLE: str = "Company-Specific DSA Placement Preparation Platform"
+    model_config = SettingsConfigDict(
+        env_file=(
+            str(PROJECT_ROOT / ".env"),
+            str(BACKEND_DIR / ".env"),
+            ".env",
+            "../.env"
+        ),
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=True,
+    )
+
+    PROJECT_NAME: str = "MAHIX"
+    PROJECT_SUBTITLE: str = "Code. Practice. Conquer. — DSA Placement Preparation Platform"
     CREATOR: str = "Maharshi"
     API_V1_STR: str = "/api"
     
     # Database Configuration (PostgreSQL primary, SQLite fallback supported)
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/preptrack")
+    DATABASE_URL: str = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres:postgres@localhost:5432/preptrack"
+)
     FALLBACK_SQLITE_URL: str = "sqlite:///./preptrack.db"
     
     # CORS Origins
@@ -29,9 +49,5 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         return ["*"]
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 settings = Settings()
