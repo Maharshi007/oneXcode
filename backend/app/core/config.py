@@ -21,7 +21,7 @@ class Settings(BaseSettings):
         case_sensitive=True,
     )
 
-    PROJECT_NAME: str = "MAHIX"
+    PROJECT_NAME: str = "OneXCode"
     PROJECT_SUBTITLE: str = "Code. Practice. Conquer. — DSA Placement Preparation Platform"
     CREATOR: str = "Maharshi"
     API_V1_STR: str = "/api"

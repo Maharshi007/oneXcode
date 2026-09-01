@@ -65,7 +65,7 @@ def find_csv_file() -> str:
     raise FileNotFoundError(f"Could not find tuf_company_questions.csv in candidates: {candidates}")
 
 def run_import():
-    logger.info("=== Starting MAHIX Data Ingestion Pipeline ===")
+    logger.info("=== Starting OneXCode Data Ingestion Pipeline ===")
     csv_path = find_csv_file()
     logger.info(f"Reading dataset from: {csv_path}")
 
@@ -239,7 +239,7 @@ def run_import():
         total_rel = session.query(CompanyProblem).count()
         
         print("\n" + "="*50)
-        print("            MAHIX DATA IMPORT SUMMARY")
+        print("            OneXCode DATA IMPORT SUMMARY")
         print("="*50)
         print(f" Total Companies in Database:       {total_comp}")
         print(f" Total Unique Problems:            {total_prob}")

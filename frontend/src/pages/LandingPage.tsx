@@ -59,7 +59,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Brand Badge */}
           <div className="inline-flex flex-col items-center justify-center px-4 py-1.5 rounded-xl bg-brand-50 dark:bg-brand-950/80 border border-brand-200/80 dark:border-brand-800/60 shadow-sm">
             <span className="text-xs font-black tracking-widest text-brand-700 dark:text-brand-300 uppercase">
-              MAHIX
+              OneXCode
             </span>
             <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 tracking-tight">
               Code. Practice. Conquer.

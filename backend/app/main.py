@@ -8,11 +8,11 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
-logger = logging.getLogger("mahix")
+logger = logging.getLogger("onexcode")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="MAHIX — Production-grade Company-Specific DSA Placement Preparation Platform created by Maharshi.",
+    description="OneXCode — Production-grade Company-Specific DSA Placement Preparation Platform created by Maharshi.",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"

@@ -1,4 +1,4 @@
-# MAHIX — Company-Specific DSA Placement Preparation Platform
+# OneXCode — Company-Specific DSA Placement Preparation
 
 > **Engineered & Designed with ⚡ by Maharshi**  
 > *Code. Practice. Conquer. A production-quality full-stack platform helping software engineering aspirants discover, practice, and track company-specific Data Structures & Algorithms (DSA) questions.*
@@ -7,7 +7,7 @@
 
 ## 🚀 Overview
 
-**MAHIX** is a high-performance web application built to streamline placement preparation and Online Assessment (OA) revision. 
+**OneXCode** is a high-performance web application built to streamline placement preparation and Online Assessment (OA) revision. 
 
 Rather than sifting through generic problem lists, students can explore questions based on target tech companies (Amazon, Google, Microsoft, Meta, NVIDIA, Apple, Uber, etc.), filter by difficulty and DSA topics, generate custom sprint preparation sets, and monitor their preparation progress with real-time analytics.
 

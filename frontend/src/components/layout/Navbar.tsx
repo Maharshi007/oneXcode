@@ -40,7 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-1.5 leading-none">
                 <span className="text-base font-black tracking-tight text-slate-900 dark:text-slate-50">
-                  MAHIX
+                  OneXCode
                 </span>
                 <span className="text-[9px] uppercase font-bold tracking-widest bg-brand-50 dark:bg-brand-950/80 text-brand-600 dark:text-brand-400 px-1.5 py-0.5 rounded border border-brand-200/60 dark:border-brand-800/60 leading-none">
                   DSA

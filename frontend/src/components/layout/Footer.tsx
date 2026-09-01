@@ -18,7 +18,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </div>
               <div>
                 <span className="text-sm font-black tracking-tight text-slate-900 dark:text-slate-100 block leading-tight">
-                  MAHIX
+                  OneXCode
                 </span>
                 <span className="text-[10px] text-brand-600 dark:text-brand-400 font-semibold tracking-tight block">
                   Code. Practice. Conquer.
@@ -84,7 +84,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         {/* Bottom bar */}
         <div className="border-t border-slate-200 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-slate-400">
-          <p>© {new Date().getFullYear()} MAHIX. Code. Practice. Conquer.</p>
+          <p>© {new Date().getFullYear()} OneXCode. Code. Practice. Conquer.</p>
           <div className="flex items-center gap-1 text-xs">
             <span>Crafted with</span>
             <Heart className="h-3.5 w-3.5 text-rose-500 fill-rose-500 inline mx-0.5" />

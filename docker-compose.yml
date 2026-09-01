@@ -27,7 +27,7 @@ services:
     restart: always
     environment:
       - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/preptrack
-      - PROJECT_NAME=MAHIX
+      - PROJECT_NAME=OneXCode
       - CREATOR=Maharshi
       - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:80
     ports:
