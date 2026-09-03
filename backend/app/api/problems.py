@@ -42,22 +42,29 @@ def list_problems(
 
 @router.get("/preparation-set", response_model=PrepSetResponse)
 def get_preparation_set(
-    company: str = Query(..., description="Company slug or name"),
+    company: Optional[str] = Query(None, description="Company slug or name (optional)"),
     difficulty: Optional[str] = Query(None, description="Comma-separated difficulties: Easy,Medium,Hard"),
-    count: int = Query(25, ge=1, le=200, description="Target number of problems: 10, 25, 50, 100"),
+    topic: Optional[str] = Query(None, description="Topic name filter (optional)"),
+    count: int = Query(5, ge=1, le=10, description="Target number of problems (1 to 10)"),
+    randomize: bool = Query(True, description="Whether to randomly select problems"),
     db: Session = Depends(get_db)
 ):
     """
-    Generate a focused preparation problem set for a specific company and difficulty targets.
+    Generate a focused preparation/random problem set matching target company, difficulty, and topic filters.
     """
+    if count < 1 or count > 10:
+        raise HTTPException(status_code=400, detail="Problem count must be between 1 and 10.")
+
     diff_list = [d.strip() for d in difficulty.split(",") if d.strip()] if difficulty else None
     result = DSAService.generate_preparation_set(
         db=db,
         company_id_or_slug=company,
         difficulties=diff_list,
-        count=count
+        topic=topic,
+        count=count,
+        randomize=randomize
     )
-    if not result:
+    if result is None and company and company.lower() != "all":
         raise HTTPException(status_code=404, detail=f"Company '{company}' not found.")
     return result
 

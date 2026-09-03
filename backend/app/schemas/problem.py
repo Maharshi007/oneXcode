@@ -36,8 +36,10 @@ class ProblemListResponse(BaseModel):
     total_pages: int
 
 class PrepSetResponse(BaseModel):
-    company: ProblemCompanyBrief
+    company: Optional[ProblemCompanyBrief] = None
     title: str
     total_selected: int
     difficulty_filter: Optional[str] = None
+    topic_filter: Optional[str] = None
     problems: List[ProblemWithCompanies]
+

@@ -19,7 +19,7 @@ export const PreparationModeModal: React.FC<PreparationModeModalProps> = ({
   onGenerated,
 }) => {
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(['Easy', 'Medium', 'Hard']);
-  const [problemCount, setProblemCount] = useState<number>(25);
+  const [problemCount, setProblemCount] = useState<number>(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,6 +39,11 @@ export const PreparationModeModal: React.FC<PreparationModeModalProps> = ({
       return;
     }
 
+    if (problemCount < 1 || problemCount > 10) {
+      setError('Please choose between 1 and 10 problems.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -53,19 +58,21 @@ export const PreparationModeModal: React.FC<PreparationModeModalProps> = ({
       onGenerated(res);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Failed to generate preparation set.');
+      let msg = 'Failed to generate preparation set.';
+      if (typeof err === 'string') {
+        msg = err;
+      } else if (typeof err?.message === 'string') {
+        msg = err.message;
+      } else if (typeof err?.detail === 'string') {
+        msg = err.detail;
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   const difficultyOptions = ['Easy', 'Medium', 'Hard'];
-  const countOptions = [
-    { label: '10 Problems (Quick Warmup)', value: 10 },
-    { label: '25 Problems (Standard Prep)', value: 25 },
-    { label: '50 Problems (Intensive Marathon)', value: 50 },
-    { label: 'All Matching Problems', value: 200 },
-  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
@@ -138,32 +145,66 @@ export const PreparationModeModal: React.FC<PreparationModeModalProps> = ({
           {/* Problem Count selection */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2.5">
-              2. Choose Problem Set Size
+              2. Number of Problems (1 – 10)
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {countOptions.map((opt) => {
-                const isSelected = problemCount === opt.value;
-                return (
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Stepper Controls */}
+              <div className="inline-flex items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 p-1 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => setProblemCount((prev) => Math.max(1, prev - 1))}
+                  disabled={problemCount <= 1}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 shadow-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-bold text-base cursor-pointer"
+                  aria-label="Decrease number of problems"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={problemCount}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val)) {
+                      setProblemCount(Math.min(10, Math.max(1, val)));
+                    }
+                  }}
+                  className="w-12 text-center bg-transparent text-sm font-bold text-slate-900 dark:text-slate-100 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  aria-label="Target number of problems"
+                />
+                <button
+                  type="button"
+                  onClick={() => setProblemCount((prev) => Math.min(10, prev + 1))}
+                  disabled={problemCount >= 10}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 shadow-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-bold text-base cursor-pointer"
+                  aria-label="Increase number of problems"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Quick Select Buttons */}
+              <div className="flex items-center gap-1.5">
+                {[1, 3, 5, 7, 10].map((num) => (
                   <button
-                    key={opt.value}
+                    key={num}
                     type="button"
-                    onClick={() => setProblemCount(opt.value)}
-                    className={`flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-all text-left cursor-pointer ${
-                      isSelected
-                        ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/70 text-brand-800 dark:text-brand-200 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    onClick={() => setProblemCount(num)}
+                    className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      problemCount === num
+                        ? 'bg-brand-600 text-white shadow-sm'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
-                    <span>{opt.label}</span>
-                    <span
-                      className={`h-2.5 w-2.5 rounded-full ${
-                        isSelected ? 'bg-brand-500' : 'bg-slate-300 dark:bg-slate-700'
-                      }`}
-                    />
+                    {num}
                   </button>
-                );
-              })}
+                ))}
+              </div>
             </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium">
+              Choose between 1 and 10 problems for this practice sprint.
+            </p>
           </div>
 
           {error && (

@@ -72,12 +72,14 @@ export interface PlatformStats {
 }
 
 export interface PrepSetResponse {
-  company: ProblemCompanyBrief;
+  company?: ProblemCompanyBrief | null;
   title: string;
   total_selected: number;
   difficulty_filter?: string;
+  topic_filter?: string;
   problems: Problem[];
 }
+
 
 export interface ProblemProgress {
   status: ProblemStatus;

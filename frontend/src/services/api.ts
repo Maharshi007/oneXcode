@@ -26,7 +26,26 @@ class ApiService {
         let errorDetail = `HTTP Error ${response.status}`;
         try {
           const errData = await response.json();
-          errorDetail = errData.detail || errorDetail;
+          if (typeof errData?.detail === 'string') {
+            errorDetail = errData.detail;
+          } else if (Array.isArray(errData?.detail)) {
+            const messages = errData.detail.map((item: any) => {
+              if (typeof item === 'string') return item;
+              if (item && typeof item === 'object') {
+                const loc = Array.isArray(item.loc)
+                  ? item.loc.filter((l: any) => l !== 'query' && l !== 'body').join('.')
+                  : '';
+                const msg = item.msg || item.message || JSON.stringify(item);
+                return loc ? `${loc}: ${msg}` : msg;
+              }
+              return String(item);
+            });
+            errorDetail = messages.filter(Boolean).join('; ') || errorDetail;
+          } else if (errData?.detail && typeof errData.detail === 'object') {
+            errorDetail = errData.detail.msg || errData.detail.message || JSON.stringify(errData.detail);
+          } else if (typeof errData?.message === 'string') {
+            errorDetail = errData.message;
+          }
         } catch {
           // keep fallback
         }
@@ -121,19 +140,54 @@ class ApiService {
     return this.fetchJson<TopicStat[]>('/topics');
   }
 
-  // Preparation Mode Set
+  // Preparation Mode Set / Random Problem Generation
   async getPreparationSet(params: {
-    company: string;
+    company?: string;
     difficulty?: string;
+    topic?: string;
     count?: number;
+    randomize?: boolean;
   }): Promise<PrepSetResponse> {
     const query = new URLSearchParams();
-    query.append('company', params.company);
+    if (params.company && params.company !== 'All') query.append('company', params.company);
     if (params.difficulty && params.difficulty !== 'All') query.append('difficulty', params.difficulty);
+    if (params.topic && params.topic !== 'All') query.append('topic', params.topic);
     if (params.count) query.append('count', params.count.toString());
+    if (params.randomize !== undefined) query.append('randomize', params.randomize.toString());
 
-    return this.fetchJson<PrepSetResponse>(`/problems/preparation-set?${query.toString()}`);
+    try {
+      return await this.fetchJson<PrepSetResponse>(`/problems/preparation-set?${query.toString()}`);
+    } catch (err: any) {
+      // If the backend returned a missing company error (e.g. running against an older deployed backend where company was required),
+      // seamlessly fetch matching problems from the problems endpoint and randomly select the target count.
+      if (!params.company || params.company === 'All') {
+        const pRes = await this.getProblems({
+          difficulty: params.difficulty !== 'All' ? params.difficulty : undefined,
+          topic: params.topic !== 'All' ? params.topic : undefined,
+          limit: 100,
+        });
+
+        if (pRes.items.length === 0) {
+          throw new Error('No problems found matching the selected filters.');
+        }
+
+        // Shuffle items randomly
+        const shuffled = [...pRes.items].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, Math.min(params.count || 5, shuffled.length));
+
+        return {
+          company: null,
+          title: `Random — ${selected.length} Problem Preparation Set`,
+          total_selected: selected.length,
+          difficulty_filter: params.difficulty && params.difficulty !== 'All' ? params.difficulty : 'All Difficulties',
+          topic_filter: params.topic && params.topic !== 'All' ? params.topic : undefined,
+          problems: selected,
+        };
+      }
+      throw err;
+    }
   }
 }
+
 
 export const api = new ApiService();

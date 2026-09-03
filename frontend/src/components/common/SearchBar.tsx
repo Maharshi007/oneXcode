@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 
 interface SearchBarProps {
@@ -13,28 +13,30 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
   placeholder = 'Search by name or topic...',
-  debounceMs = 300,
+  debounceMs = 250,
   className = '',
 }) => {
   const [localValue, setLocalValue] = useState(value);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
 
   useEffect(() => {
+    if (localValue === value) return;
+
     const timer = setTimeout(() => {
-      if (localValue !== value) {
-        onChange(localValue);
-      }
+      onChangeRef.current(localValue);
     }, debounceMs);
 
     return () => clearTimeout(timer);
-  }, [localValue, onChange, debounceMs, value]);
+  }, [localValue, debounceMs, value]);
 
   const handleClear = () => {
     setLocalValue('');
-    onChange('');
+    onChangeRef.current('');
   };
 
   return (
@@ -53,6 +55,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onClick={handleClear}
           className="absolute right-3 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md transition-colors cursor-pointer"
           title="Clear search"
+          aria-label="Clear search"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -60,3 +63,4 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     </div>
   );
 };
+

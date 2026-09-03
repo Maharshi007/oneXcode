@@ -256,24 +256,37 @@ class DSAService:
     @staticmethod
     def generate_preparation_set(
         db: Session,
-        company_id_or_slug: str,
+        company_id_or_slug: Optional[str] = None,
         difficulties: Optional[List[str]] = None,
-        count: Optional[int] = 25
+        topic: Optional[str] = None,
+        count: Optional[int] = 5,
+        randomize: bool = True
     ) -> Optional[dict]:
-        company = DSAService.get_company_by_id_or_slug(db, company_id_or_slug)
-        if not company:
-            return None
+        company = None
+        if company_id_or_slug and company_id_or_slug.lower() != "all":
+            company = DSAService.get_company_by_id_or_slug(db, company_id_or_slug)
+            if not company:
+                return None
 
-        query = db.query(Problem).join(CompanyProblem, CompanyProblem.problem_id == Problem.id)\
-            .filter(CompanyProblem.company_id == company.id)
+        query = db.query(Problem)
+        if company:
+            query = query.join(CompanyProblem, CompanyProblem.problem_id == Problem.id)\
+                .filter(CompanyProblem.company_id == company.id)
 
         if difficulties and len(difficulties) > 0:
-            clean_diffs = [d.capitalize() for d in difficulties if d.capitalize() in ["Easy", "Medium", "Hard"]]
+            clean_diffs = [d.strip().capitalize() for d in difficulties if d.strip().capitalize() in ["Easy", "Medium", "Hard"]]
             if clean_diffs:
                 query = query.filter(Problem.difficulty.in_(clean_diffs))
 
-        # Order by problem name (preserving pure dataset integrity without fake frequencies)
-        query = query.order_by(asc(Problem.name))
+        if topic and topic.lower() != "all":
+            topics_list = [t.strip().lower() for t in topic.split(",") if t.strip() and t.lower() != "all"]
+            for t in topics_list:
+                query = query.filter(func.lower(Problem.topics).contains(t))
+
+        if randomize:
+            query = query.order_by(func.random())
+        else:
+            query = query.order_by(asc(Problem.name))
 
         if count and count > 0:
             problems = query.limit(count).all()
@@ -299,13 +312,15 @@ class DSAService:
             })
 
         diff_str = ", ".join(difficulties) if difficulties else "All Difficulties"
-        title = f"{company.name} — {len(items)} Problem Preparation Set"
+        title_prefix = company.name if company else "Random"
+        title = f"{title_prefix} — {len(items)} Problem Preparation Set"
 
         return {
-            "company": {"id": company.id, "name": company.name, "slug": company.slug},
+            "company": {"id": company.id, "name": company.name, "slug": company.slug} if company else None,
             "title": title,
             "total_selected": len(items),
             "difficulty_filter": diff_str,
+            "topic_filter": topic if topic and topic.lower() != "all" else None,
             "problems": items
         }
 
