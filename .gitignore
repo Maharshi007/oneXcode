@@ -56,3 +56,6 @@ failed_companies.txt
 # ==============================
 *.tmp
 *.temp
+
+# Local secrets
+passwords/
