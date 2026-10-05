@@ -1,7 +1,19 @@
-import React from 'react';
-import { Sun, Moon, Search, Sparkles, Terminal } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {
+  Sun,
+  Moon,
+  Search,
+  Sparkles,
+  Terminal,
+  LogIn,
+  LogOut,
+} from 'lucide-react';
+import type { User } from '@supabase/supabase-js';
+
 import { useTheme } from '../../context/ThemeContext';
 import { useProgress } from '../../context/ProgressContext';
+import { supabase } from '../../lib/supabase';
+import { signInWithGoogle } from '../../lib/auth';
 
 interface NavbarProps {
   currentPath: string;
@@ -18,12 +30,72 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { getTotalSolvedCount } = useProgress();
   const solvedCount = getTotalSolvedCount();
 
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Companies', path: '/companies' },
     { name: 'All Problems', path: '/problems' },
     { name: 'My Dashboard', path: '/dashboard' },
   ];
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (mounted) {
+        setUser(user);
+        setAuthLoading(false);
+      }
+    };
+
+    loadUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        setUser(session?.user ?? null);
+        setAuthLoading(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setAuthLoading(true);
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Google sign-in failed:', error);
+      setAuthLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      setAuthLoading(true);
+
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Sign-out failed:', error);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
@@ -37,15 +109,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
               <Terminal className="h-5 w-5" />
             </div>
+
             <div>
               <div className="flex items-center gap-1.5 leading-none">
                 <span className="text-base font-black tracking-tight text-slate-900 dark:text-slate-50">
                   OneXCode
                 </span>
+
                 <span className="text-[9px] uppercase font-bold tracking-widest bg-brand-50 dark:bg-brand-950/80 text-brand-600 dark:text-brand-400 px-1.5 py-0.5 rounded border border-brand-200/60 dark:border-brand-800/60 leading-none">
                   DSA
                 </span>
               </div>
+
               <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 tracking-tight block leading-tight mt-0.5">
                 Code. Practice. Conquer.
               </span>
@@ -85,7 +160,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-slate-700 text-xs transition-colors cursor-pointer"
           >
             <Search className="h-3.5 w-3.5 text-slate-400" />
-            <span className="hidden sm:inline font-medium">Search problems, companies...</span>
+
+            <span className="hidden sm:inline font-medium">
+              Search problems, companies...
+            </span>
+
             <kbd className="hidden sm:inline-block text-[10px] font-mono font-semibold bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
               Ctrl K
             </kbd>
@@ -98,14 +177,71 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="View your preparation progress"
           >
             <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Solved: <strong>{solvedCount}</strong></span>
+            <span>
+              Solved: <strong>{solvedCount}</strong>
+            </span>
           </button>
+
+          {/* Google Authentication */}
+          {!authLoading && !user && (
+            <button
+              onClick={handleGoogleSignIn}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer text-xs font-semibold"
+              title="Sign in with Google to save your progress"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Sign in</span>
+            </button>
+          )}
+
+          {!authLoading && user && (
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => onNavigate('/dashboard')}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer text-xs font-semibold"
+                title={user.email ?? 'Signed-in user'}
+              >
+                {user.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt=""
+                    className="h-5 w-5 rounded-full"
+                  />
+                ) : (
+                  <span className="h-5 w-5 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 flex items-center justify-center text-[10px] font-bold">
+                    {(user.user_metadata?.full_name ||
+                      user.email ||
+                      'U')[0].toUpperCase()}
+                  </span>
+                )}
+
+                <span className="hidden lg:inline max-w-24 truncate">
+                  {user.user_metadata?.full_name ||
+                    user.email?.split('@')[0] ||
+                    'Account'}
+                </span>
+              </button>
+
+              <button
+                onClick={handleSignOut}
+                className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                title="Sign out"
+                aria-label="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
+          )}
 
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            title={
+              theme === 'dark'
+                ? 'Switch to Light Mode'
+                : 'Switch to Dark Mode'
+            }
             aria-label="Toggle Theme"
           >
             {theme === 'dark' ? (
@@ -117,7 +253,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Creator Credit Badge */}
           <div className="hidden lg:flex items-center pl-2 border-l border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
-            <span>By <strong className="text-slate-800 dark:text-slate-200 font-bold">Maharshi</strong></span>
+            <span>
+              By{' '}
+              <strong className="text-slate-800 dark:text-slate-200 font-bold">
+                Maharshi
+              </strong>
+            </span>
           </div>
         </div>
       </div>

@@ -168,15 +168,21 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
         <DifficultyBadge difficulty={problem.difficulty} size="sm" />
       </td>
 
-      {/* Action / Practice */}
+      {/* Action / Practice — only shown when a verified LeetCode link exists */}
       <td className="py-3.5 pr-4 pl-2 text-right w-24 whitespace-nowrap">
-        <span
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 cursor-not-allowed"
-          title="LeetCode practice links will be enriched soon"
-        >
-          LeetCode
-          <ExternalLink className="h-3 w-3 opacity-60" />
-        </span>
+        {problem.leetcode_url ? (
+          <a
+            href={problem.leetcode_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800/60 hover:bg-orange-100 dark:hover:bg-orange-900/50 hover:border-orange-300 dark:hover:border-orange-700 transition-colors"
+            title={`Practice on LeetCode #${problem.leetcode_problem_number ?? ''}`}
+          >
+            <ExternalLink className="h-3 w-3" />
+            <span className="hidden sm:inline">LeetCode</span>
+          </a>
+        ) : null}
       </td>
     </tr>
   );
