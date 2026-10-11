@@ -59,3 +59,7 @@ failed_companies.txt
 
 # Local secrets
 passwords/
+
+# Question dataset: kept locally, not committed
+tuf_company_questions.csv
+data/*.csv
